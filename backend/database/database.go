@@ -35,7 +35,7 @@ func ConnectDB() {
 	fmt.Println("Database connection established")
 
 	// Auto Migration
-	err = db.AutoMigrate(&models.User{}, &models.Service{}, &models.Booking{})
+	err = db.AutoMigrate(&models.User{}, &models.Hotel{}, &models.Room{}, &models.Booking{}, &models.Review{})
 	if err != nil {
 		log.Fatalf("Failed to migrate database: %v", err)
 	}
@@ -47,70 +47,75 @@ func ConnectDB() {
 
 func SeedInitialData(db *gorm.DB) {
 	var count int64
-	db.Model(&models.Service{}).Count(&count)
+	db.Model(&models.Hotel{}).Count(&count)
 	if count > 0 {
 		return
 	}
 
-	mockServices := []models.Service{
+	mockHotels := []models.Hotel{
 		{
-			Title:       "Luxury Bali Resort & Spa",
+			Name:        "Luxury Bali Resort & Spa",
 			Description: "Experience pure bliss at our beachfront resort in Jimbaran. Features private pools, world-class dining, and panoramic ocean views.",
-			Category:    "Hotel",
 			Location:    "Jimbaran, Bali",
-			Price:       3500000,
-			Capacity:    2,
+			City:        "Bali",
+			Address:     "Jl. Pantai Muaya, Jimbaran",
+			Rating:      4.9,
+			Facilities:  "Swimming Pool, Spa, Gym, Restaurant, WiFi",
 			ImageURL:    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80",
+			Type:        "hotel",
+			PriceStart:  3500000,
 		},
 		{
-			Title:       "Mountain View Villa Yogyakarta",
+			Name:        "Mountain View Villa Yogyakarta",
 			Description: "A serene escape nestled in the hills of Yogyakarta. Perfect for families looking for peace and quiet with a stunning view of Merapi.",
-			Category:    "Villa",
 			Location:    "Sleman, Yogyakarta",
-			Price:       1200000,
-			Capacity:    6,
+			City:        "Yogyakarta",
+			Address:     "Jl. Kaliurang KM 20, Sleman",
+			Rating:      4.7,
+			Facilities:  "Private Pool, Kitchen, WiFi, Garden, Parking",
 			ImageURL:    "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=80",
+			Type:        "villa",
+			PriceStart:  1200000,
 		},
 		{
-			Title:       "Modern City Center Apartment Jakarta",
-			Description: "Stay in the heart of the action. This modern apartment offers high-speed WiFi, gym access, and proximity to major shopping malls.",
-			Category:    "Hotel",
+			Name:        "Modern City Center Hotel Jakarta",
+			Description: "Stay in the heart of the action. This modern hotel offers high-speed WiFi, gym access, and proximity to major shopping malls.",
 			Location:    "Sudirman, Jakarta",
-			Price:       850000,
-			Capacity:    2,
+			City:        "Jakarta",
+			Address:     "Jl. Jend. Sudirman No. 21, Jakarta Pusat",
+			Rating:      4.5,
+			Facilities:  "WiFi, Gym, Bar, meeting Room, Restaurant",
 			ImageURL:    "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80",
-		},
-		{
-			Title:       "Colonial Heritage Boutique Hotel",
-			Description: "Discover history in this beautifully restored colonial building. Each room tells a story with antique furniture and modern amenities.",
-			Category:    "Hotel",
-			Location:    "Bandung, West Java",
-			Price:       950000,
-			Capacity:    2,
-			ImageURL:    "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
-		},
-		{
-			Title:       "Grand Executive Villa & Spa Bali",
-			Description: "A sophisticated villa with integrated spa treatments and a personal chef at your service throughout your stay.",
-			Category:    "Villa",
-			Location:    "Uluwatu, Bali",
-			Price:       4500000,
-			Capacity:    4,
-			ImageURL:    "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80",
-		},
-		{
-			Title:       "Kuta Beach Front Hotel",
-			Description: "Affordable luxury right on the famous Kuta beach. Watch the sunset from your private balcony.",
-			Category:    "Hotel",
-			Location:    "Kuta, Bali",
-			Price:       750000,
-			Capacity:    2,
-			ImageURL:    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80",
+			Type:        "hotel",
+			PriceStart:  850000,
 		},
 	}
 
-	for _, service := range mockServices {
-		db.Create(&service)
+	for _, hotel := range mockHotels {
+		db.Create(&hotel)
+
+		// Seed Rooms for each hotel
+		rooms := []models.Room{
+			{
+				HotelID:    hotel.ID,
+				Type:       "Deluxe Room",
+				RoomNumber: "101",
+				Price:      hotel.PriceStart,
+				Capacity:   2,
+				ImageURL:   hotel.ImageURL,
+			},
+			{
+				HotelID:    hotel.ID,
+				Type:       "Superior Room",
+				RoomNumber: "201",
+				Price:      hotel.PriceStart + 500000,
+				Capacity:   2,
+				ImageURL:   "https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=800&q=80",
+			},
+		}
+		for _, room := range rooms {
+			db.Create(&room)
+		}
 	}
 
 	// Seed Admin User

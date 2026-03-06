@@ -4,12 +4,12 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Home from './pages/Home'
 import Search from './pages/Search'
-import ServiceDetail from './pages/ServiceDetail'
+import HotelDetail from './pages/HotelDetail'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import UserDashboard from './pages/UserDashboard'
 import AdminDashboard from './pages/AdminDashboard'
-import ManageServices from './pages/ManageServices'
+import ManageHotels from './pages/ManageHotels'
 import ManageBookings from './pages/ManageBookings'
 import { AuthProvider } from './context/AuthContext'
 import PrivateRoute from './components/PrivateRoute'
@@ -23,7 +23,7 @@ const App: React.FC = () => {
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/search" element={<Search />} />
-                        <Route path="/service/:id" element={<ServiceDetail />} />
+                        <Route path="/hotel/:id" element={<HotelDetail />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
 
@@ -35,7 +35,7 @@ const App: React.FC = () => {
                         {/* Admin Routes */}
                         <Route element={<PrivateRoute role="admin" />}>
                             <Route path="/admin" element={<AdminDashboard />} />
-                            <Route path="/admin/services" element={<ManageServices />} />
+                            <Route path="/admin/hotels" element={<ManageHotels />} />
                             <Route path="/admin/bookings" element={<ManageBookings />} />
                         </Route>
                     </Routes>
